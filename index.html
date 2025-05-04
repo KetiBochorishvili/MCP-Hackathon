@@ -295,148 +295,77 @@
 
         submitBtn.addEventListener('click', async () => {
             const text = textarea.value.trim();
+            if (!text) return;
 
-            if (!text) {
-                return; // Don't proceed if textarea is empty
-            }
-
-            // Disable the button and textarea
+            // Disable UI
             submitBtn.disabled = true;
             textarea.disabled = true;
+            submitBtn.textContent = '';
+            submitBtn.classList.add('success');
 
-            try {
-                // Store the text for further processing
-                submittedText = text;
+            // try {
+            //     const resp = await fetch('http://localhost:3000/find_jobs_with_ai', {
+            //         method: 'POST',
+            //         mode: 'cors',                  // ← allow reading the response
+            //         headers: {
+            //             'Content-Type': 'application/json'
+            //         },
+            //         body: JSON.stringify({ userPrompt: text })
+            //     });
 
-                // Add success class to button (shows tick mark)
-                submitBtn.textContent = '';
-                submitBtn.classList.add('success');
+            //     if (!resp.ok) {
+            //         throw new Error(`Server returned ${resp.status}`);
+            //     }
 
-                // Simulate API response
-                let response = {
-                    data: [
-                        {
-                            title: 'Front-end Developer',
-                            description: 'We are seeking a skilled front-end developer with a passion for creating user-friendly and visually appealing web experiences. The ideal candidate will have a strong understanding of HTML, CSS, and JavaScript and will be able to work independently and as part of a team.',
-                            match: 90,
+            //     const json = await resp.json();    // now you can parse it!
+            //     const jobs = json.data;            // adjust if your payload is under a different key
 
-                        },
-                        {
-                            title: 'Front-end Developer',
-                            description: 'We are seeking a skilled front-end developer with a passion for creating user-friendly and visually appealing web experiences. The ideal candidate will have a strong understanding of HTML, CSS, and JavaScript and will be able to work independently and as part of a team.',
-                            salary: 1000,
-                            match: 60,
-                            location: 'Tbilisi',
-                            company: 'Tech Solutions',
-                            date: '2025-01-01',
-                            currency: 'GEL'
-                        },
-                        {
-                            title: 'Front-end Developer',
-                            description: 'We are seeking a skilled front-end developer with a passion for creating user-friendly and visually appealing web experiences. The ideal candidate will have a strong understanding of HTML, CSS, and JavaScript and will be able to work independently and as part of a team.',
-                            salary: 1500,
-                            match: 30,
-                            location: 'Tbilisi',
-                            company: 'Tech Solutions',
-                            date: '2025-01-01',
-                            currency: 'GEL'
-                        },
-                        {
-                            title: 'Front-end Developer',
-                            description: 'We are seeking a skilled front-end developer with a passion for creating user-friendly and visually appealing web experiences. The ideal candidate will have a strong understanding of HTML, CSS, and JavaScript and will be able to work independently and as part of a team.',
-                            salary: 1500,
-                            match: 30,
-                            location: 'Tbilisi',
-                            company: 'Tech Solutions',
-                            date: '2025-01-01',
-                            currency: 'GEL'
-                        },
-                        {
-                            title: 'Front-end Developer',
-                            description: 'We are seeking a skilled front-end developer with a passion for creating user-friendly and visually appealing web experiences. The ideal candidate will have a strong understanding of HTML, CSS, and JavaScript and will be able to work independently and as part of a team.',
-                            salary: 1500,
-                            match: 30,
-                            location: 'Tbilisi',
-                            company: 'Tech Solutions',
-                            date: '2025-01-01',
-                            currency: 'GEL'
-                        },
-                        {
-                            title: 'Front-end Developer',
-                            description: 'We are seeking a skilled front-end developer with a passion for creating user-friendly and visually appealing web experiences. The ideal candidate will have a strong understanding of HTML, CSS, and JavaScript and will be able to work independently and as part of a team.',
-                            salary: 1500,
-                            match: 30,
-                            location: 'Tbilisi',
-                            company: 'Tech Solutions',
-                            date: '2025-01-01',
-                            currency: 'GEL'
-                        },
-                        {
-                            title: 'Front-end Developer',
-                            description: 'We are seeking a skilled front-end developer with a passion for creating user-friendly and visually appealing web experiences. The ideal candidate will have a strong understanding of HTML, CSS, and JavaScript and will be able to work independently and as part of a team.',
-                            salary: 1500,
-                            match: 30,
-                            location: 'Tbilisi',
-                            company: 'Tech Solutions',
-                            date: '2025-01-01',
-                            currency: 'GEL'
-                        },
-                        {
-                            title: 'Front-end Developer',
-                            description: 'We are seeking a skilled front-end developer with a passion for creating user-friendly and visually appealing web experiences. The ideal candidate will have a strong understanding of HTML, CSS, and JavaScript and will be able to work independently and as part of a team.',
-                            salary: 1500,
-                            match: 30,
-                            location: 'Tbilisi',
-                            company: 'Tech Solutions',
-                            date: '2025-01-01',
-                            currency: 'GEL'
-                        },
-                        {
-                            title: 'Front-end Developer',
-                            description: 'We are seeking a skilled front-end developer with a passion for creating user-friendly and visually appealing web experiences. The ideal candidate will have a strong understanding of HTML, CSS, and JavaScript and will be able to work independently and as part of a team.',
-                            salary: 1500,
-                            match: 30,
-                            location: 'Tbilisi',
-                            company: 'Tech Solutions',
-                            date: '2025-01-01',
-                            currency: 'GEL'
-                        },
-                        {
-                            title: 'Front-end Developer',
-                            description: 'We are seeking a skilled front-end developer with a passion for creating user-friendly and visually appealing web experiences. The ideal candidate will have a strong understanding of HTML, CSS, and JavaScript and will be able to work independently and as part of a team.',
-                            salary: 1500,
-                            match: 30,
-                            location: 'Tbilisi',
-                            company: 'Tech Solutions',
-                            date: '2025-01-01',
-                            currency: 'GEL'
-                        },
-                        {
-                            title: 'Front-end Developer',
-                            description: 'We are seeking a skilled front-end developer with a passion for creating user-friendly and visually appealing web experiences. The ideal candidate will have a strong understanding of HTML, CSS, and JavaScript and will be able to work independently and as part of a team.',
-                            salary: 1500,
-                            match: 30,
-                            location: 'Tbilisi',
-                            company: 'Tech Solutions',
-                            date: '2025-01-01',
-                            currency: 'GEL'
-                        }
-                    ]
-                };
+            //     // show the real results
+            //     displayResults(jobs);
 
-                // Wait for the success animation
-                setTimeout(() => {
-                    displayResults(response);
-                }, 1000);
+            // } catch (error) {
+            //     console.error('Error fetching jobs:', error);
 
-            } catch (error) {
-                console.error('Error processing text:', error);
-                // Reset the button state if there's an error
-                submitBtn.disabled = false;
-                textarea.disabled = false;
-                submitBtn.classList.remove('success');
-                submitBtn.textContent = 'გაგზავნა';
-            }
+            //     // Restore UI on error
+            //     submitBtn.disabled = false;
+            //     textarea.disabled = false;
+            //     submitBtn.classList.remove('success');
+            //     submitBtn.textContent = 'გაგზავნა';
+            // }
+
+            const jobs = [
+                    {
+                        "title": "სტაჟიორი ERP სისტემის მიმართულებით",
+                        "jobUrl": "https://jobs.ge/ge/?view=jobs&id=631461",
+                        "company": "ნიკორა",
+                        "isNew": true,
+                        "date": "02 მაისი",
+                        "endsAt": "02 ივნისი",
+                        "salaryMin": "800",
+                        "salaryMax": "800",
+                        "currency": "ლარი",
+                        "description": "კომპანია \"ნიკორა\" 1998 წელს ქართული კაპიტალით დაარსდა. დღესდღეობით \"ნიკორა ჯგუფი\" წარმოდგენილია ჰოლდინგის სახით, რომელიც აერთიანებს თოთხმეტ შვილობილ კომპანიას. ჰოლდინგში წარმოდგენილი კომპანიები უმაღლესი ხარისხის ნედლეულის გამოყენებითა და თანამედროვე ტექნოლოგიების დაცვით მომხმარებელს მრავალფეროვან ასორტიმენტს სთავაზობს, როგორიცაა: ხორცპროდუქტები, ნახევარფაბრიკატები, თევზეული, რძის პროდუქტები, ნაყინი, პურ-ფუნთუშეული. კომპანიას, ასევე, აქვს საკუთარი სადისტრიბუციო ქსელი, მაღაზიათა ქსელი საქართველოს მასშტაბით და საკალმახე მეურნეობა. \"ნიკორა ჯგუფი\" არის მაღალი ხარისხის საკვები პროდუქტების, ალკოჰოლური და არაალკოჰოლური სასმელების ექსკლუზიური იმპორტიორი საქართველოში. კომპანიის მთავარი მიზანია - განვითარება, გაფართოებისკენ მუდმივი სწრაფვა, სიახლეების ათვისება, სოციალური პასუხისმგებლობა, პარტნიორებთან გრძელვადიანი თანამშრომლობა და მომხმარებლის ერთგულების მოპოვება. \"ნიკორა ჯგუფი\" ქართულ ბაზარზე ერთ-ერთი აქტიური დამსაქმებელია. ამჟამად, ჰოლდინგში 10000-ზე მეტი თანამშრომელია და კომპანიის განვითარებასთან ერთად დასაქმებულთა რაოდენობა მუდმივად იზრდება. სრული ინფორმაციისათვის გადადით ჩვენს საიტზე: http://www.nikora.ge სს \"ნიკორას\" შვილობილი კომპანია შპს \"ნიკორა\" აცხადებს ვაკანსიას სტაჟიორი ERP სისტემის მიმართულებით: სამუშაო პირობები: ** სამუშაო ადგილი: ნაძალადევი, ალ. მრევლიშვილის #2; ** ანაზღაურება: 800 ლარი. ძირითადი ფუნქცია-მოვალეობები: ** სისტემის გატესტვაში მონაწილეობის მიღება; ** ლიცენზიების აღრიცხვა/მართვა; ** ბაზების მოვლა, ბექაფირება და დაცულად შენახვის უზრუნველყოფა; ** სისტემის გაუმჯობესებაში მონაწილეობის მიღება. ძირითადი მოთხოვნები: ** ინგლისური ენის კარგად ცოდნა; ** Excel-ის კარგად ცოდნა; ** ERP პროდუქტებთან მუშაობის გამოცდილება ჩაითვლება უპირატესობად; პიროვნული უნარ-ჩვევები: ** ტექნოლოგიური აზროვნების უნარი; ** შედეგებზე ორიენტირებულობა; ** მაღალი პასუხისმგებლობის გრძნობა; ** გუნდური მუშაობის უნარი; ** პრობლემის დროული იდენტიფიცირებისა და აღმოფხვრის უნარი; ** ოპერატიულობა. თუ დაინტერესდით ჩვენი ვაკანსიით და აკმაყოფილებთ ზემოთ მოყვანილ მოთხოვნებს, გთხოვთ გაეცანით ქვემოთ მოცემულ ინფორმაციას პერსონალური მონაცემების დამუშავების შესახებ და შემდეგ გამოაგზავნეთ თქვენი CV/რეზიუმე მისამართზე: jobs@nikora.ge სათაურის ველში გთხოვთ მიუთითეთ ვაკანსიის დასახელება, წინააღმდეგ შემთხვევაში თქვენი კანდიდატურა არ განიხილება. გაცნობებთ, რომ თქვენს მიერ მოწოდებული ინფორმაცია, რომელიც შეიცვას პერსონალურ მონაცემებს, დამუშავდება შპს ნიკორა ს/კ 400132183 და უფლებამოსილი პირის - სს \"ნიკორას\" ს/კ 200050675 (რეგისტრირებული მისამართი: ქ. თბილისი ალექსანდრე მრევლიშვილის ქ. #2) მიერ \"პერსონალურ მონაცემთა დაცვის შესახებ\" საქართველოს კანონის შესაბამისად დასაქმების მსურველი პირის/კანდიდატის არსებულ და/ან სამომავლო ვაკანსიის მოთხოვნებთან შესაბამისობის დადგენისა და დასაქმებისათვის საჭირო პროცედურების წარმართვის მიზნით. შესაბამისად, მოთხოვნილი ინფორმაციის მიუწოდებლობის შემთხვევაში, მოკლებული ვართ შესაძლებლობას განვიხილოთ თქვენი კანდიდატურა. მონაცემები ინახება არაუმეტეს 1 (ერთი) წლის ვადით. ამასთანავე, გაცნობებთ, რომ \"პერსონალურ მონაცემთა დაცვის შესახებ\" საქართველოს კანონის თანახმად, უფლება გაქვთ ნებისმიერ დროს მიიღოთ ინფორმაცია თქვენს შესახებ დამუშავებულ მონაცემთა თაობაზე, მოითხოვოთ მათი გაცნობა, ასლის მიღება, მცდარი არაზუსტი მონაცემების გასწორება, განახლება, შევსება, ასევე მონაცემთა გადატანა, დაბლოკვა, დამუშავების შეწყვეტა, წაშლა ან განადგურება, თუ არ არსებობს მონაცემთა სუბიექტის უფლებების შეზღუდვის საფუძველი, წერილობით შემდეგ ელ. ფოსტაზე contact@nikora.ge შეტყობინების გაგზავნის გზით ან/და ფოსტის მეშვეობით შპს ნიკორა ს/კ 400132183 იურიდიულ მისამართზე: ქ. თბილისი ალ. მრევლიშვილის ქ. №2. შპს ნიკორა ს/კ 400132183 კანდიდატთა შერჩევის პროცესს ახორციელებს დისკრიმინაციის ყველა ფორმით აღმოფხვრის შესახებ კანონის მოთხოვნათა და პირთა მიმართ თანაბარი მოპყრობის პრინციპების დაცვით და გამორიცხავს პირთა მიმართ დისკრიმინაციას ნებისმიერი ნიშნით. დისკრიმინაციისგან დაცვა ასევე უზრუნველყოფილია შრომითი ურთიერთობის ნებისმიერ ეტაპზე.",
+                        "englishVersion": false,
+                        "match": 0
+                    },
+                    {
+                        "title": "მონაცემთა ბაზის ოპერატორი",
+                        "jobUrl": "https://jobs.ge/ge/?view=jobs&id=630667",
+                        "company": "შარმ ტრეიდინგი",
+                        "isNew": false,
+                        "date": "30 აპრილი",
+                        "endsAt": "30 მაისი",
+                        "salaryMin": "1000",
+                        "salaryMax": "1000",
+                        "currency": "ლარი",
+                        "description": "\"შარმ ტრეიდინგი\" გახლავთ წამყვანი სადისტრიბუციო კომპანია საქართველოში, რომელიც დაარსდა 1998 წელს და მას შემდეგ ინარჩუნებს ლიდერ პოზიციებს. \"შარმ ტრეიდინგი\" ახორციელებს მსოფლიო წამყვანი ბრენდების ექსკლუზიურ დისტრიბუციას საქართველოს მასშტაბით \"Schwarzkopf, Henkel, Unilever, Carlsberg, Selpak, Algida და სხვა.\" კომპანია \"შარმ ტრეიდინგი\" აცხადებს ვაკანსიას, მონაცემთა ბაზის ოპერატორის (1C პროგრამაში) პოზიციაზე. ადგილმდებარეობა: თბილისი (დიღომი) სამუშაო განაკვეთი: ორშაბათი-პარასკევი, 09:00-18:00 ან ცვლები 08:00-16:00 ან 16:00-00:00 ანაზღაურება - ანაზღაურებადი სტაჟირება (მაქსიმუმ 1 თვე), სტაჟირების შემდეგ 800-1000 ლარი ფუნქცია-მოვალეობები: ** სააღრიცხვო პროგრამაში მონაცემების შეყვანა, დამუშავება; ** შეკვეთების მომზადება და კორექტირება; ** ელექტრონული სასაქონლო ზედნადების და ანგარიშფაქტურის გააქტიურება და გადაგზავნა. აუცილებელი მოთხოვნები: ** სასურველია უმაღლესი განათლება ან დამამთავრებელი კურსის სტუდენტი ** Microsoft Excel-ის საშუალო დონეზე ცოდნა ** სააღრიცხვო პროგრამა 1C-ის ცოდნა ჩაითვლება უპირატესობად რას გთავაზობთ? ** ჯანმრთელობის დაზღვევას (6 თვის შემდეგ) ** კომფორტულ სამუშაო გარემოს ** თანამშრომლის საჭიროებებზე მორგებულ ინსტრუმენტებს ** კარიერული განვითარების შესაძლებლობას ** ეტაპობრივ წინსვლასა და ბენეფიტებს დამატებითი უნარები: ** ორგანიზებული ** ენერგიული ** დეტალებზე ორიენტირებული ** კომუნიკაბელური ** მიზანდასახული ** დამოუკიდებლად მუშაობის უნარი დაინტერესებულ პირებს გთხოვთ გადმოაგზავნოთ CV ელფოსტაზე: vacancy@sharmtrading.ge. სათაურში მიუთითეთ პოზიციის დასახელება \"მონაცემთა ბაზის ოპერატორი\". კომპანია \"შარმ ტრეიდინგი\" პატივს სცემს პერსონალურ მონაცემთა დაცვის თაობაზე მოქმედ რეგულაციებს და თავის საქმიანობას წარმართავს \"პერსონალურ მონაცემთა დაცვის შესახებ\" საქართველოს კანონის მოთხოვნათა შესაბამისად. ნებისმიერი პერსონალური მონაცემი, რომელიც შპს \"შარმ ტრეიდინგისთვის\" ხელმისაწვდომი გახდება კომპანიაში გამოცხადებულ ამა თუ იმ ვაკანსიაზე განაცხადების განხილვისას, რაც მოიცავს, მაგრამ არ შემოიფარგლება თქვენს CV-სა ან/და მის თანდართულ დოკუმენტებში მოცემული მონაცემებით (შემდგომში \"კანდიდატის პერსონალური მონაცემები\"), შეგროვდება და დამუშავდება ვაკანსიაზე თქვენი განაცხადის შენახვისა და განხილვის, ასევე კანდიდატთა შერჩევის პროცესში თქვენი დაშვების მიზნით და საქართველოს მოქმედი კანონმდებლობის შესაბამისად. გაითვალისწინეთ, რომ კანდიდატის პერსონალური მონაცემების კომპანია \"შარმ ტრეიდინგისთვის\" გაგზავნით, თქვენ ადასტურებთ, რომ გაეცანით წინამდებარე შეტყობინებას და თანახმა ხართ, თქვენი პერსონალური მონაცემები შეგროვდეს, შენახულ იქნას, გადაიცეს ან/და დამუშავდეს ზემოთ ხსენებული ფორმით. ყოველივე აღნიშნულზე თანხმობა აუცილებელი პირობაა \"შარმ ტრეიდინგში\" ნებისმიერ პოზიციაზე თქვენი კანდიდატურის განსახილველად. გისურვებთ წარმატებას!",
+                        "englishVersion": false,
+                        "match": 0
+                    }
+                ]
+console.log({jobs})
+                displayResults(jobs)
+
         });
 
         // Add event listeners for visualization
