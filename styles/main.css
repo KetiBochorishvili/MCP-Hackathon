@@ -21,24 +21,6 @@ body {
     position: relative;
 }
 
-.container::before,
-.container::after {
-    content: '';
-    position: absolute;
-    width: 150px;
-    height: 150px;
-    border: 3px solid rgba(108, 60, 233, 0.1);
-    border-radius: 20px;
-    z-index: -1;
-}
-
-.container::before {
-    top: -20px;
-    left: -20px;
-    border-right: none;
-    border-bottom: none;
-}
-
 .container::after {
     bottom: -20px;
     right: -20px;
@@ -108,7 +90,7 @@ h1::after {
 
 textarea {
     width: 100%;
-    min-height: 400px;
+    min-height: 200px;
     padding: 1.5rem;
     border: 2px solid rgba(108, 60, 233, 0.1);
     border-radius: 12px;
