@@ -87,6 +87,7 @@ h1::after {
 }
 
 .input-card {
+    margin-top: 20px;
     background: white;
     border-radius: 20px;
     padding: 2.5rem;
@@ -241,6 +242,7 @@ textarea:focus {
     border: 1px solid rgba(108, 60, 233, 0.1);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     text-align: left;
+    text-decoration: none;
 }
 
 .job-card:hover {
