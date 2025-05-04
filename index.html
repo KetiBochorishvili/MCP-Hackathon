@@ -1,37 +1,331 @@
 <!DOCTYPE html>
-
-<html>
+<html lang="ka">
 
 <head>
     <meta charset="UTF-8">
-    <title>Chart</title>
-    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="styles/index.css" />
+    <title>ვაკანსიების ძიება</title>
+    <link rel="stylesheet" href="styles/main.css">
 </head>
 
-<body translate="no">
+<body>
+    <div class="container">
+        <!-- Input Page -->
+        <div id="inputPage">
+            <h1>იპოვე შესაბამისი ვაკანსიები მთელს მსოფლიოში</h1>
+            <p class="description">აღწერე შენი სამუშაო გამოცდილება</p>
 
-    <div class="page-container">
-        <div id="graph-container"></div>
+            <div class="input-card">
+                <textarea placeholder="შეიყვანეთ ან ჩასვით თქვენი ტექსტი აქ..." id="analysisText"></textarea>
+                <div class="char-count">0 სიმბოლო</div>
+                <button class="analyze-btn" id="submitBtn">გაგზავნა</button>
+            </div>
+        </div>
+
+        <!-- Results Page -->
+        <div id="resultsPage" class="hidden">
+            <div class="results-header">
+                <h2>სულ მოიძებნა <span id="jobCount">0</span> ვაკანსია</h2>
+            </div>
+            <div id="jobCards" class="job-cards">
+                <!-- Job cards will be inserted here dynamically -->
+            </div>
+        </div>
     </div>
 
-    <script src="libs/d3.v7.min.js"></script>
-    <script src="scripts/d3chart.js"></script>
-
     <script>
-        let chart;
-        d3.json('data/data.json')
-            .then(data => {
-                chart = new Chart()
-                    .svgHeight(window.innerHeight - 30)
-                    .svgWidth(window.innerWidth - 30)
-                    .container('#graph-container')
-                    .data(data)
-                    .render()
-            })
-    </script>
+        const textarea = document.getElementById('analysisText');
+        const charCount = document.querySelector('.char-count');
+        const submitBtn = document.getElementById('submitBtn');
+        const inputPage = document.getElementById('inputPage');
+        const resultsPage = document.getElementById('resultsPage');
+        const jobCount = document.getElementById('jobCount');
+        const jobCards = document.getElementById('jobCards');
+        let submittedText = '';
+        let currentPage = 1;
+        const cardsPerPage = 8;
+        let allJobs = [];
 
+        textarea.addEventListener('input', () => {
+            const count = textarea.value.length;
+            charCount.textContent = `${count} სიმბოლო`;
+        });
+
+        function createJobCard(job) {
+            const matchPercentage = job.match + '%';
+            const card = document.createElement('div');
+            card.className = 'job-card';
+
+            // Determine match color based on new thresholds
+            const getMatchColor = (match) => {
+                if (match > 75) return '#2ecc71';  // Green for >75%
+                if (match >= 40) return '#f1c40f';  // Yellow for 40-75%
+                return '#e74c3c';  // Red for <40%
+            };
+
+            // Truncate description to 130 characters
+            const truncatedDescription = job.description.length > 130
+                ? job.description.substring(0, 130) + '...'
+                : job.description;
+
+            card.innerHTML = `
+                <div class="job-card-header">
+                    <div class="company-container">
+                        ${job.company ? `<div class="company">${job.company}</div>` : ''}
+                    </div>
+                    <div class="match-container">
+                        ${job.match ? `<div class="match" style="color: ${getMatchColor(job.match)}">${matchPercentage} match</div>` : ''}
+                    </div>
+                </div>
+                ${job.title ? `<h3 class="job-title">${job.title}</h3>` : ''}
+                ${job.description ? `<p class="job-description">${truncatedDescription}</p>` : ''}
+                ${job.location ? `
+                    <div class="location">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                            <circle cx="12" cy="10" r="3"></circle>
+                        </svg>
+                        ${job.location}
+                    </div>
+                ` : ''}
+                <div class="job-footer">
+                    ${job.salary ? `<div class="salary">${job.salary}${job.currency ? ` ${job.currency}` : ''}</div>` : ''}
+                    ${job.date ? `<div class="date">${new Date(job.date).toLocaleDateString('ka-GE')}</div>` : ''}
+                </div>
+            `;
+
+            return card;
+        }
+
+        function createPaginationControls(totalPages) {
+            const paginationContainer = document.createElement('div');
+            paginationContainer.className = 'pagination';
+
+            // Previous button
+            const prevButton = document.createElement('button');
+            prevButton.innerHTML = '←';
+            prevButton.className = 'pagination-btn';
+            prevButton.disabled = currentPage === 1;
+            prevButton.onclick = () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    displayJobCards();
+                }
+            };
+
+            // Next button
+            const nextButton = document.createElement('button');
+            nextButton.innerHTML = '→';
+            nextButton.className = 'pagination-btn';
+            nextButton.disabled = currentPage === totalPages;
+            nextButton.onclick = () => {
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    displayJobCards();
+                }
+            };
+
+            // Page numbers
+            const pageNumbers = document.createElement('div');
+            pageNumbers.className = 'page-numbers';
+            pageNumbers.textContent = `გვერდი ${currentPage}/${totalPages}`;
+
+            paginationContainer.appendChild(prevButton);
+            paginationContainer.appendChild(pageNumbers);
+            paginationContainer.appendChild(nextButton);
+
+            return paginationContainer;
+        }
+
+        function displayJobCards() {
+            const startIndex = (currentPage - 1) * cardsPerPage;
+            const endIndex = startIndex + cardsPerPage;
+            const currentJobs = allJobs.slice(startIndex, endIndex);
+
+            jobCards.innerHTML = '';
+
+            currentJobs.forEach(job => {
+                const card = createJobCard(job);
+                jobCards.appendChild(card);
+            });
+
+            const totalPages = Math.ceil(allJobs.length / cardsPerPage);
+
+            // Remove existing pagination if any
+            const existingPagination = document.querySelector('.pagination');
+            if (existingPagination) {
+                existingPagination.remove();
+            }
+
+            // Add pagination controls if there are multiple pages
+            if (totalPages > 1) {
+                const paginationControls = createPaginationControls(totalPages);
+                jobCards.after(paginationControls);
+            }
+        }
+
+        function displayResults(response) {
+            inputPage.classList.add('hidden');
+            resultsPage.classList.remove('hidden');
+
+            if (Array.isArray(response.data)) {
+                jobCount.textContent = response.data.length;
+                allJobs = response.data;
+                currentPage = 1;
+                displayJobCards();
+            } else {
+                // If response.data is text
+                jobCount.textContent = '0';
+                jobCards.innerHTML = `<div class="text-response">${response.data}</div>`;
+            }
+        }
+
+        submitBtn.addEventListener('click', async () => {
+            const text = textarea.value.trim();
+
+            if (!text) {
+                return; // Don't proceed if textarea is empty
+            }
+
+            // Disable the button and textarea
+            submitBtn.disabled = true;
+            textarea.disabled = true;
+
+            try {
+                // Store the text for further processing
+                submittedText = text;
+
+                // Add success class to button (shows tick mark)
+                submitBtn.textContent = '';
+                submitBtn.classList.add('success');
+
+                // Simulate API response
+                let response = {
+                    data: 'smth'/* [
+                        {
+                            title: 'Front-end Developer',
+                            description: 'We are seeking a skilled front-end developer with a passion for creating user-friendly and visually appealing web experiences. The ideal candidate will have a strong understanding of HTML, CSS, and JavaScript and will be able to work independently and as part of a team.',
+                            match: 90,
+
+                        },
+                        {
+                            title: 'Front-end Developer',
+                            description: 'We are seeking a skilled front-end developer with a passion for creating user-friendly and visually appealing web experiences. The ideal candidate will have a strong understanding of HTML, CSS, and JavaScript and will be able to work independently and as part of a team.',
+                            salary: 1000,
+                            match: 60,
+                            location: 'Tbilisi',
+                            company: 'Tech Solutions',
+                            date: '2025-01-01',
+                            currency: 'GEL'
+                        },
+                        {
+                            title: 'Front-end Developer',
+                            description: 'We are seeking a skilled front-end developer with a passion for creating user-friendly and visually appealing web experiences. The ideal candidate will have a strong understanding of HTML, CSS, and JavaScript and will be able to work independently and as part of a team.',
+                            salary: 1500,
+                            match: 30,
+                            location: 'Tbilisi',
+                            company: 'Tech Solutions',
+                            date: '2025-01-01',
+                            currency: 'GEL'
+                        },
+                        {
+                            title: 'Front-end Developer',
+                            description: 'We are seeking a skilled front-end developer with a passion for creating user-friendly and visually appealing web experiences. The ideal candidate will have a strong understanding of HTML, CSS, and JavaScript and will be able to work independently and as part of a team.',
+                            salary: 1500,
+                            match: 30,
+                            location: 'Tbilisi',
+                            company: 'Tech Solutions',
+                            date: '2025-01-01',
+                            currency: 'GEL'
+                        },
+                        {
+                            title: 'Front-end Developer',
+                            description: 'We are seeking a skilled front-end developer with a passion for creating user-friendly and visually appealing web experiences. The ideal candidate will have a strong understanding of HTML, CSS, and JavaScript and will be able to work independently and as part of a team.',
+                            salary: 1500,
+                            match: 30,
+                            location: 'Tbilisi',
+                            company: 'Tech Solutions',
+                            date: '2025-01-01',
+                            currency: 'GEL'
+                        },
+                        {
+                            title: 'Front-end Developer',
+                            description: 'We are seeking a skilled front-end developer with a passion for creating user-friendly and visually appealing web experiences. The ideal candidate will have a strong understanding of HTML, CSS, and JavaScript and will be able to work independently and as part of a team.',
+                            salary: 1500,
+                            match: 30,
+                            location: 'Tbilisi',
+                            company: 'Tech Solutions',
+                            date: '2025-01-01',
+                            currency: 'GEL'
+                        },
+                        {
+                            title: 'Front-end Developer',
+                            description: 'We are seeking a skilled front-end developer with a passion for creating user-friendly and visually appealing web experiences. The ideal candidate will have a strong understanding of HTML, CSS, and JavaScript and will be able to work independently and as part of a team.',
+                            salary: 1500,
+                            match: 30,
+                            location: 'Tbilisi',
+                            company: 'Tech Solutions',
+                            date: '2025-01-01',
+                            currency: 'GEL'
+                        },
+                        {
+                            title: 'Front-end Developer',
+                            description: 'We are seeking a skilled front-end developer with a passion for creating user-friendly and visually appealing web experiences. The ideal candidate will have a strong understanding of HTML, CSS, and JavaScript and will be able to work independently and as part of a team.',
+                            salary: 1500,
+                            match: 30,
+                            location: 'Tbilisi',
+                            company: 'Tech Solutions',
+                            date: '2025-01-01',
+                            currency: 'GEL'
+                        },
+                        {
+                            title: 'Front-end Developer',
+                            description: 'We are seeking a skilled front-end developer with a passion for creating user-friendly and visually appealing web experiences. The ideal candidate will have a strong understanding of HTML, CSS, and JavaScript and will be able to work independently and as part of a team.',
+                            salary: 1500,
+                            match: 30,
+                            location: 'Tbilisi',
+                            company: 'Tech Solutions',
+                            date: '2025-01-01',
+                            currency: 'GEL'
+                        },
+                        {
+                            title: 'Front-end Developer',
+                            description: 'We are seeking a skilled front-end developer with a passion for creating user-friendly and visually appealing web experiences. The ideal candidate will have a strong understanding of HTML, CSS, and JavaScript and will be able to work independently and as part of a team.',
+                            salary: 1500,
+                            match: 30,
+                            location: 'Tbilisi',
+                            company: 'Tech Solutions',
+                            date: '2025-01-01',
+                            currency: 'GEL'
+                        },
+                        {
+                            title: 'Front-end Developer',
+                            description: 'We are seeking a skilled front-end developer with a passion for creating user-friendly and visually appealing web experiences. The ideal candidate will have a strong understanding of HTML, CSS, and JavaScript and will be able to work independently and as part of a team.',
+                            salary: 1500,
+                            match: 30,
+                            location: 'Tbilisi',
+                            company: 'Tech Solutions',
+                            date: '2025-01-01',
+                            currency: 'GEL'
+                        }
+                    ]*/
+                };
+
+                // Wait for the success animation
+                setTimeout(() => {
+                    displayResults(response);
+                }, 1000);
+
+            } catch (error) {
+                console.error('Error processing text:', error);
+                // Reset the button state if there's an error
+                submitBtn.disabled = false;
+                textarea.disabled = false;
+                submitBtn.classList.remove('success');
+                submitBtn.textContent = 'გაგზავნა';
+            }
+        });
+    </script>
 </body>
 
 </html>

@@ -1,0 +1,426 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+body {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f3f0ff 0%, #e6e0ff 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.container {
+    width: 100%;
+    max-width: 1200px;
+    text-align: center;
+    position: relative;
+}
+
+.container::before,
+.container::after {
+    content: '';
+    position: absolute;
+    width: 150px;
+    height: 150px;
+    border: 3px solid rgba(108, 60, 233, 0.1);
+    border-radius: 20px;
+    z-index: -1;
+}
+
+.container::before {
+    top: -20px;
+    left: -20px;
+    border-right: none;
+    border-bottom: none;
+}
+
+.container::after {
+    bottom: -20px;
+    right: -20px;
+    border-left: none;
+    border-top: none;
+}
+
+h1 {
+    color: #6c3ce9;
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    font-weight: 700;
+    text-shadow: 2px 2px 4px rgba(108, 60, 233, 0.1);
+    position: relative;
+    display: inline-block;
+}
+
+h1::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, #6c3ce9, transparent);
+}
+
+.description {
+    color: #666;
+    font-size: 1.25rem;
+    margin-bottom: 2.5rem;
+    position: relative;
+    padding-bottom: 1.5rem;
+}
+
+.description::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50px;
+    height: 2px;
+    background: rgba(108, 60, 233, 0.2);
+}
+
+.input-card {
+    background: white;
+    border-radius: 20px;
+    padding: 2.5rem;
+    box-shadow: 0 20px 40px rgba(108, 60, 233, 0.1);
+    position: relative;
+    border: 1px solid rgba(108, 60, 233, 0.1);
+}
+
+.input-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(108, 60, 233, 0.2), transparent);
+}
+
+textarea {
+    width: 100%;
+    min-height: 400px;
+    padding: 1.5rem;
+    border: 2px solid rgba(108, 60, 233, 0.1);
+    border-radius: 12px;
+    font-size: 1rem;
+    resize: vertical;
+    color: #333;
+    margin-bottom: 1rem;
+    background: rgba(255, 255, 255, 0.8);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+}
+
+textarea:focus {
+    outline: none;
+    border-color: #6c3ce9;
+    background: white;
+    box-shadow: inset 0 2px 4px rgba(108, 60, 233, 0.1);
+}
+
+.char-count {
+    text-align: right;
+    color: #666;
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px dashed rgba(108, 60, 233, 0.1);
+}
+
+.analyze-btn {
+    background: linear-gradient(135deg, #6c3ce9, #5a30d0);
+    color: white;
+    border: none;
+    padding: 1rem 2.5rem;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    min-width: 160px;
+    box-shadow: 0 4px 15px rgba(108, 60, 233, 0.2);
+}
+
+.analyze-btn:hover:not(.success) {
+    background: linear-gradient(135deg, #5a30d0, #4a20c0);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(108, 60, 233, 0.3);
+}
+
+.analyze-btn.success {
+    background: linear-gradient(135deg, #4CAF50, #45a049);
+    cursor: default;
+    padding: 1rem;
+    width: 60px;
+    pointer-events: none;
+    box-shadow: 0 4px 15px rgba(76, 175, 80, 0.2);
+}
+
+.analyze-btn.success::before {
+    content: "✓";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1.5rem;
+}
+
+.analyze-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+@media (max-width: 768px) {
+    h1 {
+        font-size: 2rem;
+    }
+
+    .description {
+        font-size: 1rem;
+    }
+
+    .input-card {
+        padding: 1.5rem;
+    }
+
+    .container::before,
+    .container::after {
+        width: 100px;
+        height: 100px;
+    }
+}
+
+/* Results Page Styles */
+.hidden {
+    display: none;
+}
+
+#resultsPage {
+    min-height: 100vh;
+    width: 100%;
+    position: relative;
+}
+
+.results-header {
+    margin-bottom: 2rem;
+    text-align: center;
+    padding-top: 2rem;
+}
+
+.results-header h2 {
+    color: #6c3ce9;
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.job-cards {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.job-card {
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 8px 24px rgba(108, 60, 233, 0.08);
+    border: 1px solid rgba(108, 60, 233, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    text-align: left;
+}
+
+.job-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px rgba(108, 60, 233, 0.12);
+}
+
+.job-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.company-container {
+    flex: 1;
+    min-width: 0;
+}
+
+.match-container {
+    flex-shrink: 0;
+    text-align: right;
+}
+
+.company {
+    font-weight: 600;
+    color: #333;
+    font-size: 1.1rem;
+}
+
+.match {
+    font-weight: 700;
+    font-size: 1.4rem;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.job-title {
+    font-size: 1.4rem;
+    color: #1a1a1a;
+    margin-bottom: 0.8rem;
+    text-align: left;
+}
+
+.job-description {
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 1.2rem;
+    text-align: left;
+}
+
+.location {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #666;
+    font-size: 0.95rem;
+    margin-bottom: 1rem;
+}
+
+.location svg {
+    color: #6c3ce9;
+}
+
+.job-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 1rem;
+    border-top: 1px dashed rgba(108, 60, 233, 0.1);
+}
+
+.salary {
+    font-weight: 600;
+    color: #333;
+    font-size: 1.1rem;
+}
+
+.date {
+    color: #666;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.text-response {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    color: #666;
+    line-height: 1.6;
+    text-align: center;
+    font-size: 1.2rem;
+    max-width: 600px;
+    margin: 0 auto;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    box-shadow: 0 8px 24px rgba(108, 60, 233, 0.08);
+    border: 1px solid rgba(108, 60, 233, 0.1);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .job-cards {
+        grid-template-columns: 1fr;
+        /* Single column on mobile */
+    }
+
+    .results-header h2 {
+        font-size: 1.8rem;
+    }
+
+    .job-card {
+        padding: 1.2rem;
+    }
+
+    .job-title {
+        font-size: 1.2rem;
+    }
+
+    .company,
+    .match {
+        font-size: 1rem;
+    }
+}
+
+/* Pagination Styles */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    margin: 2rem 0;
+    padding: 1rem;
+}
+
+.pagination-btn {
+    background: white;
+    border: 2px solid #6c3ce9;
+    color: #6c3ce9;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
+}
+
+.pagination-btn:hover:not(:disabled) {
+    background: #6c3ce9;
+    color: white;
+}
+
+.pagination-btn:disabled {
+    border-color: #ccc;
+    color: #ccc;
+    cursor: not-allowed;
+}
+
+.page-numbers {
+    font-size: 1rem;
+    color: #666;
+    font-weight: 500;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .pagination {
+        gap: 0.5rem;
+    }
+
+    .pagination-btn {
+        padding: 0.4rem 0.8rem;
+        font-size: 1rem;
+    }
+
+    .page-numbers {
+        font-size: 0.9rem;
+    }
+}
