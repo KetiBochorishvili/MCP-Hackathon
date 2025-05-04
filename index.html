@@ -91,11 +91,11 @@
 
         function createBarChart(jobs) {
             const sortedJobs = [...jobs]
-                .sort((a, b) => b.match - a.match)
+                .sort((a, b) => b.matchPercentage - a.matchPercentage)
                 .slice(0, 8);
 
             // Calculate max value and add 10% buffer
-            const maxValue = Math.max(...sortedJobs.map(job => job.match));
+            const maxValue = Math.max(...sortedJobs.map(job => job.matchPercentage));
             const yAxisMax = Math.ceil((maxValue * 1.1) / 10) * 10; // Round up to nearest 10
 
             const ctx = document.getElementById('matchChart').getContext('2d');
@@ -111,7 +111,7 @@
                     labels: sortedJobs.map(job => job.company || ''),
                     datasets: [{
                         label: 'Match Percentage',
-                        data: sortedJobs.map(job => job.match),
+                        data: sortedJobs.map(job => job.matchPercentage),
                         backgroundColor: 'rgba(53, 162, 235, 0.5)',
                         borderColor: 'rgb(53, 162, 235)',
                         borderWidth: 1,
@@ -165,7 +165,7 @@
         }
 
         function createJobCard(job) {
-            const matchPercentage = job.match + '%';
+            const matchPercentage = job.matchPercentage + '%';
             const card = document.createElement('div');
             card.className = 'job-card';
 
@@ -187,7 +187,7 @@
                         ${job.company ? `<div class="company">${job.company}</div>` : ''}
                     </div>
                     <div class="match-container">
-                        ${job.match ? `<div class="match" style="color: ${getMatchColor(job.match)}">${matchPercentage} match</div>` : ''}
+                        ${job.matchPercentage ? `<div class="match" style="color: ${getMatchColor(job.matchPercentage)}">${matchPercentage} თანხვედრა</div>` : ''}
                     </div>
                 </div>
                 ${job.title ? `<h3 class="job-title">${job.title}</h3>` : ''}
@@ -203,7 +203,7 @@
                 ` : ''}
                 <div class="job-footer">
                     ${job.salary ? `<div class="salary">${job.salary}${job.currency ? ` ${job.currency}` : ''}</div>` : ''}
-                    ${job.date ? `<div class="date">${new Date(job.date).toLocaleDateString('ka-GE')}</div>` : ''}
+                    ${job.date ? `<div class="date">${job.date}</div>` : ''}
                 </div>
             `;
 
@@ -278,13 +278,13 @@
         }
 
         function displayResults(response) {
-            debugger
             inputPage.classList.add('hidden');
             resultsPage.classList.remove('hidden');
 
             if (Array.isArray(response.data)) {
                 jobCount.textContent = response.data.length;
                 allJobs = response.data;
+                allJobs = allJobs.sort((a, b) => b.matchPercentage - a.matchPercentage);
                 currentPage = 1;
                 displayJobCards();
             } else {
@@ -305,179 +305,179 @@
             submitBtn.classList.add('success');
 
             try {
-                // const resp = await fetch('http://localhost:3000/find_jobs_with_ai', {
-                //     method: 'POST',
-                //     mode: 'cors',                  // ← allow reading the response
-                //     headers: {
-                //         'Content-Type': 'application/json'
-                //     },
-                //     body: JSON.stringify({ userPrompt: text })
-                // });
+                const resp = await fetch('http://localhost:3000/find_jobs_with_ai', {
+                    method: 'POST',
+                    mode: 'cors',                  // ← allow reading the response
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ userPrompt: text })
+                });
 
-                // if (!resp.ok) {
-                //     throw new Error(`Server returned ${resp.status}`);
-                // }
+                if (!resp.ok) {
+                    throw new Error(`Server returned ${resp.status}`);
+                }
 
-                // const response = await resp.json();    // now you can parse it!          // adjust if your payload is under a different key
+                const response = await resp.json();    // now you can parse it!          // adjust if your payload is under a different key
 
-                let response = {
-    "success": true,
-    "message": "success",
-    "data": [
-        {
-            "title": "სტაჟიორი ERP სისტემის მიმართულებით",
-            "jobUrl": "https://jobs.ge/ge/?view=jobs&id=631461",
-            "company": "ნიკორა",
-            "isNew": true,
-            "date": "02 მაისი",
-            "endsAt": "02 ივნისი",
-            "id": 0,
-            "salaryMin": null,
-            "salaryMax": null,
-            "currency": "",
-            "description": "Error: Cannot read properties of undefined (reading 'chat')",
-            "error": true,
-            "matchPercentage": 0
-        },
-        {
-            "title": "მონაცემთა ბაზის ოპერატორი",
-            "jobUrl": "https://jobs.ge/ge/?view=jobs&id=630667",
-            "company": "შარმ ტრეიდინგი",
-            "isNew": false,
-            "date": "30 აპრილი",
-            "endsAt": "30 მაისი",
-            "id": 1,
-            "salaryMin": null,
-            "salaryMax": null,
-            "currency": "",
-            "description": "Error: Cannot read properties of undefined (reading 'chat')",
-            "error": true,
-            "matchPercentage": 0
-        },
-        {
-            "title": "IT მხარდაჭერის სპეციალისტი",
-            "jobUrl": "https://jobs.ge/ge/?view=jobs&id=630240",
-            "company": "All Service Group",
-            "isNew": false,
-            "date": "29 აპრილი",
-            "endsAt": "29 მაისი",
-            "id": 2,
-            "salaryMin": null,
-            "salaryMax": null,
-            "currency": "",
-            "description": "Error: Cannot read properties of undefined (reading 'chat')",
-            "error": true,
-            "matchPercentage": 0
-        },
-        {
-            "title": "ექსელის დოკუმენტების ვალიდაციის სპეციალისტი",
-            "jobUrl": "https://jobs.ge/ge/?view=jobs&id=629932",
-            "company": "GM Pharmaceuticals",
-            "isNew": false,
-            "date": "28 აპრილი",
-            "endsAt": "20 მაისი",
-            "id": 3,
-            "salaryMin": null,
-            "salaryMax": null,
-            "currency": "",
-            "description": "Error: Cannot read properties of undefined (reading 'chat')",
-            "error": true,
-            "matchPercentage": 0
-        },
-        {
-            "title": "უფროსი Backend ინჟინერი",
-            "jobUrl": "https://jobs.ge/ge/?view=jobs&id=629571",
-            "company": "Gegidze Agency",
-            "isNew": false,
-            "date": "25 აპრილი",
-            "endsAt": "07 მაისი",
-            "id": 4,
-            "salaryMin": null,
-            "salaryMax": null,
-            "currency": "",
-            "description": "Error: Cannot read properties of undefined (reading 'chat')",
-            "error": true,
-            "matchPercentage": 85
-        },
-        {
-            "title": "Front End დეველოპერი",
-            "jobUrl": "https://jobs.ge/ge/?view=jobs&id=628945",
-            "company": "სფეის კარგო",
-            "isNew": false,
-            "date": "23 აპრილი",
-            "endsAt": "23 მაისი",
-            "id": 5,
-            "salaryMin": null,
-            "salaryMax": null,
-            "currency": "",
-            "description": "Error: Cannot read properties of undefined (reading 'chat')",
-            "error": true,
-            "matchPercentage": 75
-        },
-        {
-            "title": "IT მხარდაჭერის სპეციალისტი",
-            "jobUrl": "https://jobs.ge/ge/?view=jobs&id=628449",
-            "company": "TNET",
-            "isNew": false,
-            "date": "22 აპრილი",
-            "endsAt": "22 მაისი",
-            "id": 6,
-            "salaryMin": null,
-            "salaryMax": null,
-            "currency": "",
-            "description": "Error: Cannot read properties of undefined (reading 'chat')",
-            "error": true,
-            "matchPercentage": 0
-        },
-        {
-            "title": "Senior Kotlin Native დეველოპერი",
-            "jobUrl": "https://jobs.ge/ge/?view=jobs&id=628034",
-            "company": "Proxied",
-            "isNew": false,
-            "date": "17 აპრილი",
-            "endsAt": "17 მაისი",
-            "id": 7,
-            "salaryMin": null,
-            "salaryMax": null,
-            "currency": "",
-            "description": "Error: Cannot read properties of undefined (reading 'chat')",
-            "error": true,
-            "matchPercentage": 0
-        },
-        {
-            "title": "Senior Backend დეველოპერი",
-            "jobUrl": "https://jobs.ge/ge/?view=jobs&id=628033",
-            "company": "Proxied",
-            "isNew": false,
-            "date": "17 აპრილი",
-            "endsAt": "17 მაისი",
-            "id": 8,
-            "salaryMin": null,
-            "salaryMax": null,
-            "currency": "",
-            "description": "Error: Cannot read properties of undefined (reading 'chat')",
-            "error": true,
-            "matchPercentage": 80
-        },
-        {
-            "title": "ტექნიკური მხარდაჭერის ინჟინერი",
-            "jobUrl": "https://jobs.ge/ge/?view=jobs&id=627969",
-            "company": "სქაიტელი",
-            "isNew": false,
-            "date": "17 აპრილი",
-            "endsAt": "17 მაისი",
-            "id": 9,
-            "salaryMin": null,
-            "salaryMax": null,
-            "currency": "",
-            "description": "Error: Cannot read properties of undefined (reading 'chat')",
-            "error": true,
-            "matchPercentage": 0
-        }
-    ]
-}
+                let staticResponse = {
+                    "success": true,
+                    "message": "success",
+                    "data": [
+                        {
+                            "title": "სტაჟიორი ERP სისტემის მიმართულებით",
+                            "jobUrl": "https://jobs.ge/ge/?view=jobs&id=631461",
+                            "company": "ნიკორა",
+                            "isNew": true,
+                            "date": "02 მაისი",
+                            "endsAt": "02 ივნისი",
+                            "id": 0,
+                            "salaryMin": "800",
+                            "salaryMax": "800",
+                            "currency": "ლარი",
+                            "description": "კომპანია \"ნიკორა\" დაარსდა 1998 წელს და დღესდღეობით წარმოადგენს ჰოლდინგს, რომელიც აერთიანებს თოთხმეტ შვილობილ კომპანიას, რომლებიც მომხმარებელს სთავაზობენ მრავალფეროვან საკვებ პროდუქტებს და სასმელებს. კომპანიას აქვს საკუთარი სადისტრიბუციო და მაღაზიათა ქსელი საქართველოს მასშტაბით და ასევე, საკალმახე მეურნეობა. \"ნიკორა ჯგუფი\" მიზნად ისახავს განვითარებას, გაფართოებას, სიახლეების ათვისებას, სოციალური პასუხისმგებლობის გაძლიერებას და მომხმარებლის ერთგულების მოპოვებას. ამჟამად, ჰოლდინგში დასაქმებულია 10,000-ზე მეტი თანამშრომელი, და კომპანიის ზრდასთან ერთად, დასაქმებულთა რაოდენობა მუდმივად იზრდება. კომპანია აცხადებს ვაკანსიას სტაჟიორის პოზიციაზე ERP სისტემის მიმართულებით, სადაც კანდიდატებს მოეთხოვებათ ტექნოლოგიური უნარ-ჩვევები და ინგლისური ენის ცოდნა.",
+                            "englishVersion": false,
+                            "matchPercentage": 10
+                        },
+                        {
+                            "title": "მონაცემთა ბაზის ოპერატორი",
+                            "jobUrl": "https://jobs.ge/ge/?view=jobs&id=630667",
+                            "company": "შარმ ტრეიდინგი",
+                            "isNew": false,
+                            "date": "30 აპრილი",
+                            "endsAt": "30 მაისი",
+                            "id": 1,
+                            "salaryMin": "1000",
+                            "salaryMax": "1000",
+                            "currency": "ლარი",
+                            "description": "\"შარმ ტრეიდინგი\" არის წამყვანი სადისტრიბუციო კომპანია საქართველოში, რომელიც დაარსდა 1998 წელს და ახორციელებს მსოფლიო წამყვანი ბრენდების ექსკლუზიურ დისტრიბუციას. კომპანია აცხადებს ვაკანსიას მონაცემთა ბაზის ოპერატორის პოზიციაზე, რომელიც მოიცავს მონაცემების შეყვანას, შეკვეთების მომზადებას და ელექტრონული დოკუმენტაციის მართვას. სამუშაო განაკვეთი არის ორშაბათიდან პარასკევამდე, ხოლო ანაზღაურება სტაჟირების შემდეგ შეადგენს 800-1000 ლარს. კანდიდატებს მოეთხოვებათ უმაღლესი განათლება ან დამამთავრებელი კურსის სტუდენტობა, Microsoft Excel-ის ცოდნა და 1C პროგრამის ცოდნა უპირატესობად ჩაითვლება. კომპანია სთავაზობს ჯანმრთელობის დაზღვევას, კომფორტულ სამუშაო გარემოს და კარიერული განვითარების შესაძლებლობებს.",
+                            "englishVersion": false,
+                            "matchPercentage": 5
+                        },
+                        {
+                            "title": "IT მხარდაჭერის სპეციალისტი",
+                            "jobUrl": "https://jobs.ge/ge/?view=jobs&id=630240",
+                            "company": "All Service Group",
+                            "isNew": false,
+                            "date": "29 აპრილი",
+                            "endsAt": "29 მაისი",
+                            "id": 2,
+                            "salaryMin": "900",
+                            "salaryMax": "900",
+                            "currency": "ლარი",
+                            "description": "\"All Service Group\" is a company focused on creating complete comfort for apartment residents by providing services such as modern intercom and card systems for elevators and entrance doors, camera installation, building cleaning, yard maintenance, barrier installation, and GSM opening functions. They are currently hiring for an IT Support Specialist position in Tbilisi, offering a full-time role with a probationary period salary of 900 GEL NET, which increases to 1000-1300 GEL NET based on qualifications after successful completion. The role involves active participation in business processes, project management skill development, involvement in new company projects, and access to corporate benefits like insurance and company vehicles. Key responsibilities include timely response to subscriber issues, technical troubleshooting, ensuring smooth operation of software and hardware, and collaboration with service providers. Candidates should have IT education, knowledge of Microsoft Windows, proficiency in English, experience with peripheral and network devices, and strong organizational skills.",
+                            "englishVersion": false,
+                            "matchPercentage": 10
+                        },
+                        {
+                            "title": "ექსელის დოკუმენტების ვალიდაციის სპეციალისტი",
+                            "jobUrl": "https://jobs.ge/ge/?view=jobs&id=629932",
+                            "company": "GM Pharmaceuticals",
+                            "isNew": false,
+                            "date": "28 აპრილი",
+                            "endsAt": "20 მაისი",
+                            "id": 3,
+                            "salaryMin": "900",
+                            "salaryMax": "1200",
+                            "currency": "ლარი",
+                            "description": "GM Pharmaceuticals is an international, multinational pharmaceutical corporation with 25 years of experience, producing medications and dietary supplements in GMP-certified facilities across Western Europe and Georgia. The company employs over 700 highly qualified staff in Georgia and its export countries. They are currently hiring for an Excel Document Validation Specialist position, offering a stable job with opportunities for professional growth, competitive salary, and health insurance. The role involves validating XLS format files, developing validation documentation, risk assessment, and collaborating with cross-functional teams to ensure compliance with GMP standards. Candidates should have advanced Microsoft Excel skills, knowledge of GAMP guidelines, and proficiency in English, with the ability to work independently in a remote setting.",
+                            "englishVersion": false,
+                            "matchPercentage": 0
+                        },
+                        {
+                            "title": "უფროსი Backend ინჟინერი",
+                            "jobUrl": "https://jobs.ge/ge/?view=jobs&id=629571",
+                            "company": "Gegidze Agency",
+                            "isNew": false,
+                            "date": "25 აპრილი",
+                            "endsAt": "07 მაისი",
+                            "id": 4,
+                            "salaryMin": null,
+                            "salaryMax": null,
+                            "currency": "",
+                            "description": "\"გეგიძე\" ეძებს უფროსი Backend ინჟინერს. აუცილებელია ინგლისური ენის ცოდნა B2 დონეზე. ანაზღაურება შეადგენს €3000. სამუშაო ადგილი არის დისტანციური და გრაფიკი სრული (160 საათი თვეში). აპლიკაციების მიღების ვადა არის 2025 წლის 7 მაისი.",
+                            "englishVersion": false,
+                            "matchPercentage": 0
+                        },
+                        {
+                            "title": "Front End დეველოპერი",
+                            "jobUrl": "https://jobs.ge/ge/?view=jobs&id=628945",
+                            "company": "სფეის კარგო",
+                            "isNew": false,
+                            "date": "23 აპრილი",
+                            "endsAt": "23 მაისი",
+                            "id": 5,
+                            "salaryMin": "1500",
+                            "salaryMax": "1500",
+                            "currency": "ლარი",
+                            "description": "SpaceCargo is seeking a Front End Developer with a salary of 1500 GEL during a three-month probation period. The company has extensive experience in air, land, and sea freight globally, catering to both retail and small to medium-sized businesses. Key responsibilities include implementing front-end solutions, writing clean code, testing, debugging, and developing new software while collaborating with the team. Candidates should have experience with ReactJS, JavaScript, HTML5/CSS3, REST API, and version control systems like GIT, along with strong analytical, organizational, and communication skills. The position is full-time, Monday to Friday, from 10:00 to 18:30, located at Bagebi, Tskneti Highway 36a, and interested applicants should send their resumes to hr@spacecargo.ge.",
+                            "englishVersion": false,
+                            "matchPercentage": 50
+                        },
+                        {
+                            "title": "IT მხარდაჭერის სპეციალისტი",
+                            "jobUrl": "https://jobs.ge/ge/?view=jobs&id=628449",
+                            "company": "TNET",
+                            "isNew": false,
+                            "date": "22 აპრილი",
+                            "endsAt": "22 მაისი",
+                            "id": 6,
+                            "salaryMin": null,
+                            "salaryMax": null,
+                            "currency": "",
+                            "description": "TNET is seeking an IT Support Specialist to join its digital ecosystem in Tbilisi, with responsibilities including hardware and software installation, diagnostics, and support. The role involves configuring and installing computer and peripheral devices, addressing basic network issues, and resolving technical problems reported by employees. Candidates should have at least one year of experience in a similar position, knowledge of various operating systems, and experience with Active Directory. Additional qualifications such as higher education in IT, knowledge of virtualization systems, and server setup principles are considered advantageous. TNET processes personal data in compliance with Georgian law, allowing candidates to request information, corrections, or deletion of their data, and requires consent for data processing upon resume submission.",
+                            "englishVersion": false,
+                            "matchPercentage": 10
+                        },
+                        {
+                            "title": "Senior Kotlin Native დეველოპერი",
+                            "jobUrl": "https://jobs.ge/ge/?view=jobs&id=628034",
+                            "company": "Proxied",
+                            "isNew": false,
+                            "date": "17 აპრილი",
+                            "endsAt": "17 მაისი",
+                            "id": 7,
+                            "salaryMin": "2000",
+                            "salaryMax": "3500",
+                            "currency": "",
+                            "description": "კომპანია \"Proxied\" ეძებს გამოცდილ Senior Kotlin Native დეველოპერს, რომელიც იმუშავებს პლატფორმათა-შორისი მობილური აპლიკაციების შექმნაზე, განსაკუთრებული ყურადღებით server tunneling-სა და networking-ზე. ამ როლში დეველოპერი გამოიყენებს Kotlin Multiplatform Mobile (KMM)-ს, რათა შექმნას დაცული და მაღალი წარმადობის მქონე პროქსი აპლიკაციები, რომლებიც უზრუნველყოფენ საიმედო კავშირს back end სერვერებთან. პასუხისმგებლობებში შედის დაცული tunneling მექანიზმების განხორციელება, დაბალი დონის ქსელური ფუნქციების დიზაინი და ოპტიმიზაცია, და RESTful API-ების გამოყენებით back end გუნდებთან თანამშრომლობა. კანდიდატს უნდა ჰქონდეს გამოცდილება Kotlin აპლიკაციებში, Android დეველოპმენტში, და ქსელური კონცეპტების ცოდნა, მათ შორის TCP/UDP, სოკეტები, და ტუნელინგის პროტოკოლები. კომპანია გთავაზობთ კონკურენტულ ანაზღაურებას, ჯანმრთელობის დაზღვევას, და პროფესიული ზრდის შესაძლებლობებს.",
+                            "englishVersion": false,
+                            "matchPercentage": 0
+                        },
+                        {
+                            "title": "Senior Backend დეველოპერი",
+                            "jobUrl": "https://jobs.ge/ge/?view=jobs&id=628033",
+                            "company": "Proxied",
+                            "isNew": false,
+                            "date": "17 აპრილი",
+                            "endsAt": "17 მაისი",
+                            "id": 8,
+                            "salaryMin": null,
+                            "salaryMax": null,
+                            "currency": "",
+                            "description": "კომპანია \"Proxied\" ეძებს გამოცდილ დეველოპერს, რომელიც შეძლებს მასშტაბირებადი სისტემების აშენებას, ძირითადად Node.js-თან (TypeScript/JavaScript) მუშაობით, ხოლო GoLang გამოცდილება ჩაითვლება უპირატესობად. კანდიდატს უნდა ჰქონდეს Domain-Driven Design (DDD), ფუნქციონალური და ობიექტზე ორიენტირებული პროგრამირების პრინციპების ცოდნა, ასევე გამოცდილება მონორეპოსა და მიკროსერვისის არქიტექტურაში. ძირითადი პასუხისმგებლობები მოიცავს API-ების დიზაინსა და შენარჩუნებას, მონაცემთა შენახვის საიმედო გადაწყვეტილებების დანერგვას და წარმადობის ოპტიმიზაციას. აუცილებელია 6+ წლიანი გამოცდილება Node.js-თან, TypeScript/JavaScript-ის ცოდნა, SQL და NoSQL მონაცემთა ბაზების მყარი ცოდნა, ასევე გამოცდილება სხვადასხვა API ტექნოლოგიებთან. კომპანია სთავაზობს $3000-4000 ყოველთვიურ ხელფასს, ჯანმრთელობის დაზღვევას და პროფესიული ზრდის შესაძლებლობებს.",
+                            "englishVersion": false,
+                            "matchPercentage": 0
+                        },
+                        {
+                            "title": "ტექნიკური მხარდაჭერის ინჟინერი",
+                            "jobUrl": "https://jobs.ge/ge/?view=jobs&id=627969",
+                            "company": "სქაიტელი",
+                            "isNew": false,
+                            "date": "17 აპრილი",
+                            "endsAt": "17 მაისი",
+                            "id": 9,
+                            "salaryMin": "800",
+                            "salaryMax": "800",
+                            "currency": "ლარი",
+                            "description": "შპს \"სქაიტელი\" 2010 წლიდან ერთ-ერთი წამყვანი სატელეკომუნიკაციო კომპანიაა საქართველოში, რომელიც ინტერნეტ პროვაიდერების სამეულში შედის და უზრუნველყოფს მოსახლეობასა და ორგანიზაციებს მაღალხარისხიანი მომსახურებით. კომპანია იყენებს უახლეს ტექნოლოგიებს და აცხადებს ვაკანსიას ტექნიკური მხარდაჭერის ინჟინრის პოზიციაზე, რომელიც მოიცავს მომხმარებლის ზარების მიღებას, პრობლემების იდენტიფიცირებას და გადაჭრას. სამუშაო გრაფიკი მოიცავს სხვადასხვა ცვლას, მათ შორის ღამის მორიგეობას, ანაზღაურება კი 800 ლარიდან იწყება და 3 თვის შემდეგ იზრდება. პოზიცია მოითხოვს უმაღლეს განათლებას ინფორმაციული ტექნოლოგიების ან კავშირგაბმულობის სფეროში და მინიმუმ 6-თვიან სამუშაო გამოცდილებას. კანდიდატებმა უნდა გამოაგზავნონ CV მითითებულ ელექტრონულ მისამართზე, თანხმობის შემთხვევაში პერსონალური მონაცემების დამუშავებაზე დასაქმების მიზნებისთვის.",
+                            "englishVersion": false,
+                            "matchPercentage": 0
+                        }
+                    ]
+                }
+                
 
-                // show the real results
                 displayResults(response);
 
             } catch (error) {
@@ -656,7 +656,8 @@
         document.getElementById('vizBtn').addEventListener('click', () => {
             document.getElementById('resultsPage').classList.add('hidden');
             document.getElementById('vizPage').classList.remove('hidden');
-            createBarChart(allJobs);
+            let fileteredJobs = allJobs.filter(job => job.matchPercentage > 0)
+            createBarChart(fileteredJobs);
         });
 
         document.getElementById('backBtn').addEventListener('click', () => {
