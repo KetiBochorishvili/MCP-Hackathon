@@ -22,6 +22,12 @@
             </div>
         </div>
 
+        <!-- Loading Spinner -->
+        <div id="loadingSpinner" class="hidden">
+            <div class="spinner"></div>
+            <p>ვეძებთ პერსონალიზირებულ ვაკანსიებს...</p>
+        </div>
+
         <!-- Results Page -->
         <div id="resultsPage" class="hidden">
             <div class="results-header">
@@ -303,6 +309,9 @@
             textarea.disabled = true;
             submitBtn.textContent = '';
             submitBtn.classList.add('success');
+            
+            // Show loading spinner
+            document.getElementById('loadingSpinner').classList.remove('hidden');
 
             try {
                 const resp = await fetch('http://localhost:3000/find_jobs_with_ai', {
@@ -477,11 +486,16 @@
                     ]
                 }
                 
-
+                // Hide loading spinner
+                document.getElementById('loadingSpinner').classList.add('hidden');
+                
                 displayResults(response);
 
             } catch (error) {
                 console.error('Error fetching jobs:', error);
+
+                // Hide loading spinner
+                document.getElementById('loadingSpinner').classList.add('hidden');
 
                 // Restore UI on error
                 submitBtn.disabled = false;
@@ -489,167 +503,6 @@
                 submitBtn.classList.remove('success');
                 submitBtn.textContent = 'გაგზავნა';
             }
-
-            // const response = {
-            //     "success": true,
-            //     "message": "success",
-            //     "data": [
-            //         {
-            //             "title": "სტაჟიორი ERP სისტემის მიმართულებით",
-            //             "jobUrl": "https://jobs.ge/ge/?view=jobs&id=631461",
-            //             "company": "ნიკორა",
-            //             "isNew": true,
-            //             "date": "02 მაისი",
-            //             "endsAt": "02 ივნისი",
-            //             "id": 0,
-            //             "salaryMin": null,
-            //             "salaryMax": null,
-            //             "currency": "",
-            //             "description": "Error: Cannot read properties of undefined (reading 'chat')",
-            //             "error": true,
-            //             "matchPercentage": 60
-            //         },
-            //         {
-            //             "title": "მონაცემთა ბაზის ოპერატორი",
-            //             "jobUrl": "https://jobs.ge/ge/?view=jobs&id=630667",
-            //             "company": "შარმ ტრეიდინგი",
-            //             "isNew": false,
-            //             "date": "30 აპრილი",
-            //             "endsAt": "30 მაისი",
-            //             "id": 1,
-            //             "salaryMin": null,
-            //             "salaryMax": null,
-            //             "currency": "",
-            //             "description": "Error: Cannot read properties of undefined (reading 'chat')",
-            //             "error": true,
-            //             "matchPercentage": 50
-            //         },
-            //         {
-            //             "title": "IT მხარდაჭერის სპეციალისტი",
-            //             "jobUrl": "https://jobs.ge/ge/?view=jobs&id=630240",
-            //             "company": "All Service Group",
-            //             "isNew": false,
-            //             "date": "29 აპრილი",
-            //             "endsAt": "29 მაისი",
-            //             "id": 2,
-            //             "salaryMin": null,
-            //             "salaryMax": null,
-            //             "currency": "",
-            //             "description": "Error: Cannot read properties of undefined (reading 'chat')",
-            //             "error": true,
-            //             "matchPercentage": 55
-            //         },
-            //         {
-            //             "title": "ექსელის დოკუმენტების ვალიდაციის სპეციალისტი",
-            //             "jobUrl": "https://jobs.ge/ge/?view=jobs&id=629932",
-            //             "company": "GM Pharmaceuticals",
-            //             "isNew": false,
-            //             "date": "28 აპრილი",
-            //             "endsAt": "20 მაისი",
-            //             "id": 3,
-            //             "salaryMin": null,
-            //             "salaryMax": null,
-            //             "currency": "",
-            //             "description": "Error: Cannot read properties of undefined (reading 'chat')",
-            //             "error": true,
-            //             "matchPercentage": 30
-            //         },
-            //         {
-            //             "title": "უფროსი Backend ინჟინერი",
-            //             "jobUrl": "https://jobs.ge/ge/?view=jobs&id=629571",
-            //             "company": "Gegidze Agency",
-            //             "isNew": false,
-            //             "date": "25 აპრილი",
-            //             "endsAt": "07 მაისი",
-            //             "id": 4,
-            //             "salaryMin": null,
-            //             "salaryMax": null,
-            //             "currency": "",
-            //             "description": "Error: Cannot read properties of undefined (reading 'chat')",
-            //             "error": true,
-            //             "matchPercentage": 70
-            //         },
-            //         {
-            //             "title": "Front End დეველოპერი",
-            //             "jobUrl": "https://jobs.ge/ge/?view=jobs&id=628945",
-            //             "company": "სფეის კარგო",
-            //             "isNew": false,
-            //             "date": "23 აპრილი",
-            //             "endsAt": "23 მაისი",
-            //             "id": 5,
-            //             "salaryMin": null,
-            //             "salaryMax": null,
-            //             "currency": "",
-            //             "description": "Error: Cannot read properties of undefined (reading 'chat')",
-            //             "error": true,
-            //             "matchPercentage": 80
-            //         },
-            //         {
-            //             "title": "IT მხარდაჭერის სპეციალისტი",
-            //             "jobUrl": "https://jobs.ge/ge/?view=jobs&id=628449",
-            //             "company": "TNET",
-            //             "isNew": false,
-            //             "date": "22 აპრილი",
-            //             "endsAt": "22 მაისი",
-            //             "id": 6,
-            //             "salaryMin": null,
-            //             "salaryMax": null,
-            //             "currency": "",
-            //             "description": "Error: Cannot read properties of undefined (reading 'chat')",
-            //             "error": true,
-            //             "matchPercentage": 55
-            //         },
-            //         {
-            //             "title": "Senior Kotlin Native დეველოპერი",
-            //             "jobUrl": "https://jobs.ge/ge/?view=jobs&id=628034",
-            //             "company": "Proxied",
-            //             "isNew": false,
-            //             "date": "17 აპრილი",
-            //             "endsAt": "17 მაისი",
-            //             "id": 7,
-            //             "salaryMin": null,
-            //             "salaryMax": null,
-            //             "currency": "",
-            //             "description": "Error: Cannot read properties of undefined (reading 'chat')",
-            //             "error": true,
-            //             "matchPercentage": 40
-            //         },
-            //         {
-            //             "title": "Senior Backend დეველოპერი",
-            //             "jobUrl": "https://jobs.ge/ge/?view=jobs&id=628033",
-            //             "company": "Proxied",
-            //             "isNew": false,
-            //             "date": "17 აპრილი",
-            //             "endsAt": "17 მაისი",
-            //             "id": 8,
-            //             "salaryMin": null,
-            //             "salaryMax": null,
-            //             "currency": "",
-            //             "description": "Error: Cannot read properties of undefined (reading 'chat')",
-            //             "error": true,
-            //             "matchPercentage": 65
-            //         },
-            //         {
-            //             "title": "ტექნიკური მხარდაჭერის ინჟინერი",
-            //             "jobUrl": "https://jobs.ge/ge/?view=jobs&id=627969",
-            //             "company": "სქაიტელი",
-            //             "isNew": false,
-            //             "date": "17 აპრილი",
-            //             "endsAt": "17 მაისი",
-            //             "id": 9,
-            //             "salaryMin": null,
-            //             "salaryMax": null,
-            //             "currency": "",
-            //             "description": "Error: Cannot read properties of undefined (reading 'chat')",
-            //             "error": true,
-            //             "matchPercentage": 30
-            //         }
-            //     ]
-            // }
-
-
-            displayResults(response)
-
         });
 
         // Add event listeners for visualization
